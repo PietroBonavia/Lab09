@@ -12,6 +12,7 @@ class Model:
         self._costo = 0
 
         # TODO: Aggiungere eventuali altri attributi
+        self.tour_attrazione = TourDAO.get_tour_attrazioni()
 
         # Caricamento
         self.load_tour()
@@ -40,6 +41,18 @@ class Model:
         """
 
         # TODO
+        result = list()
+        for tour in self.tour_map:
+            id_tour1 = tour.id
+            for dizionario in self.tour_attrazione:
+                id_tour2 = dizionario['id_tour']
+                id_attrazione = dizionario['id_attrazione']
+                if id_tour1 == id_tour2:
+                    result.append((id_tour1, id_attrazione))
+        return result
+
+
+
 
     def genera_pacchetto(self, id_regione: str, max_giorni: int = None, max_budget: float = None):
         """
