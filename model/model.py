@@ -12,7 +12,6 @@ class Model:
         self._costo = 0
 
         # TODO: Aggiungere eventuali altri attributi
-        self.tour_attrazione = TourDAO.get_tour_attrazioni()
 
         # Caricamento
         self.load_tour()
@@ -41,18 +40,17 @@ class Model:
         """
 
         # TODO
-        result = list()
-        for tour in self.tour_map:
-            id_tour1 = tour.id
-            for dizionario in self.tour_attrazione:
-                id_tour2 = dizionario['id_tour']
-                id_attrazione = dizionario['id_attrazione']
-                if id_tour1 == id_tour2:
-                    result.append((id_tour1, id_attrazione))
-        return result
+        relazioni = TourDAO.get_tour_attrazioni()
 
+        for r in relazioni:
+            id_tour = r['id_tour']
+            id_attrazioni = r['id_attrazioni']
 
+            tour = self.tour_map.get(id_tour)
+            attr = self.attrazioni_map.get(id_attrazioni)
 
+            tour.attrazioni.add(attr)
+            attr.tour.add(tour)
 
     def genera_pacchetto(self, id_regione: str, max_giorni: int = None, max_budget: float = None):
         """
@@ -70,6 +68,32 @@ class Model:
         self._valore_ottimo = -1
 
         # TODO
+        def genera_pacchetto(self, id_regione: str, max_giorni: int = None, max_budget: float = None):
+
+            self._pacchetto_ottimo = []
+            self._costo = 0
+            self._valore_ottimo = -1
+
+            tour_regioni = [
+                t for t in self.tour_map.values()
+                if t.id_regione == id_regione
+            ]
+
+            tour_regioni.sort(key=lambda x: x.costo)
+
+            self._ricorsione(
+                start_index=0,
+                pacchetto_parziale=[],
+                durata_corrente=0,
+                costo_corrente=0,
+                valore_corrente=0,
+                attrazioni_usate=set(),
+                tour_regioni=tour_regioni,
+                max_giorni=max_giorni,
+                max_budget=max_budget
+            )
+
+            return self._pacchetto_ottimo, self._costo, self._valore_ottimo
 
         return self._pacchetto_ottimo, self._costo, self._valore_ottimo
 

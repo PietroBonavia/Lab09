@@ -65,4 +65,6 @@ class TourDAO:
             cursor.close()
             cnx.close()
 
+
+
         return result
